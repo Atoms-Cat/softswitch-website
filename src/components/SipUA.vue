@@ -20,6 +20,9 @@
 
 <script>
 import JsSIP from "jssip";
+import find from 'local-devices';
+// import {getIPs, getIPv4, getIPv6} from 'webrtc-ips';
+import {getIPs} from 'webrtc-ips';
 
 export default {
   name: "SipUA",
@@ -48,13 +51,13 @@ export default {
     init() {
       //const socket = new JsSIP.WebSocketInterface('ws://192.168.10.109:5062');
       //const socket = new JsSIP.WebSocketInterface('wss://192.168.10.109:5063');
-      const socket = new JsSIP.WebSocketInterface('ws://127.0.0.1:5061');
+      const socket = new JsSIP.WebSocketInterface('ws://172.17.0.1:15060');
       const configuration = {
         sockets: [socket],
         uri: 'sip:1001@atomscat.com',
         contact_uri: 'sip:1001@192.168.10.140;transport=ws',
         authorization_user: '1001',
-        password: '1234',
+        password: '123456',
         display_name: '1001',
         // 计时器
         session_timers: false,
@@ -123,7 +126,22 @@ export default {
         alert('录音加载失败...');
       };
     },
+    async getIp() {
+      // windows system
+      find().then(devices => {
+        console.log("ip list :" + JSON.stringify(devices));
+      });
+      const ips = await getIPs();
+      console.info(ips);
+      // You can pass in your custom stun server urls
+      // const ips = await getIPs({ urls: "stun:stun.stunprotocol.org:3478" });
+      // const ipv4 = await getIPv4();
+      // console.info(ipv4);
+      // const ipv6 = await getIPv6();
+      // console.info(ipv6);
+    },
     register() {
+      this.getIp();
       this.init();
       this.initMedia();
       this.ua.registrator().setExtraHeaders([
